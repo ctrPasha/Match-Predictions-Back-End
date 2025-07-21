@@ -6,8 +6,9 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node out/app.js",
 		"dev": "tsc && nodemon out/app.js",
-		"db:migrate": "ts-node scripts/migration.ts"
-	},	
+		"db:migrate:up": "ts-node scripts/migration.ts --up",
+  		"db:migrate:down": "ts-node scripts/migration.ts --down"
+	},
 	"author": "",
 	"license": "ISC",
 	"description": "",
