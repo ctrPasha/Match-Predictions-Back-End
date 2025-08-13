@@ -10,7 +10,7 @@ export function connect(): Sequelize {
 		host: 'localhost',
 		port: 3300,
 		username: 'root',
-		password: '12345',
+		password: '123456',
 		database: 'dev'
 	});
 	return sequelize;

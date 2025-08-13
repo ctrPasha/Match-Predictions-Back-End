@@ -9,6 +9,7 @@ router.get("/", async(req: Request, res: Response, next: NextFunction) => {
 	const currCounter = await CounterService.getCounter();
 
 	res.json({
+		sucess: true,
 		counter: currCounter
 	});
 });
@@ -17,6 +18,7 @@ router.post('/increment', async(req: Request, res: Response, next: NextFunction)
 	const increment = await CounterService.increment();
 
 	res.json({
+		sucess: true,
 		counter: increment
 	});
 });	
@@ -25,6 +27,7 @@ router.post('/decrement', async(req: Request, res: Response, next: NextFunction)
 	const decrement = await CounterService.decrement();
 
 	res.json({
+		sucess: true,
 		counter: decrement
 	});
 });

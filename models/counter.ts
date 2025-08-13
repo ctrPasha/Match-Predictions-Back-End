@@ -1,10 +1,8 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
-// import sequelize from '../db/database';
-
+import { DataTypes, Model, Sequelize } from "sequelize";
 export class SequelizeCounterModel extends Model {
     public id!: string;
     public counter!: number;
-};
+}
 
 export function init(sequelize: Sequelize): void {
     SequelizeCounterModel.init(
@@ -19,16 +17,16 @@ export function init(sequelize: Sequelize): void {
                 allowNull: false,
                 defaultValue: 0,
                 validate: {
-                    min: 0
-                }
-            }, 
-        }, 
+                    min: 0,
+                },
+            },
+        },
         {
             sequelize,
-            modelName: 'counter'
-        },
+            modelName: "counter",
+        }
     );
-} 
+}
 
 /*
 const Counter = sequelize.define(
