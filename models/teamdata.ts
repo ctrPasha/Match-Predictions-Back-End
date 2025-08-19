@@ -2,8 +2,6 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
 export class SequelizeTeamModel extends Model {
-    //public id!: number;
-
     public competitionCode!: string;
     public competitionType!: string;
 
@@ -27,12 +25,6 @@ export class SequelizeTeamModel extends Model {
 export function init(sequelize: Sequelize): void {
     SequelizeTeamModel.init(
         {
-            /*
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-            },*/
-
             competitionCode: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -61,7 +53,7 @@ export function init(sequelize: Sequelize): void {
             teamName: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
             },
 
             shortName: {
@@ -93,14 +85,14 @@ export function init(sequelize: Sequelize): void {
                 type: DataTypes.UUID,
                 allowNull: false,
                 unique: true,
-                defaultValue: () => uuidv4()
-            }
+                defaultValue: () => uuidv4(),
+            },
         },
         {
             sequelize,
             modelName: "TeamsModel",
             tableName: "Teams",
-            timestamps: false
+            timestamps: false,
         }
     );
 }
