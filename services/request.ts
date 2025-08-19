@@ -10,7 +10,6 @@ export async function get(endpoint: string): Promise<any> {
 				'X-Auth-Token': config.apiKey
 			}
 		});
-		console.log(res.data);
 		return res.data;
 		/*	
 		return await new Promise(async (resolve, reject) => {
@@ -29,6 +28,7 @@ export async function get(endpoint: string): Promise<any> {
 export async function post(endpoint: string, payload: any = {}): Promise<any> {
 	try {
 		const res = await axios.post<any>(`/${endpoint}`, payload);
+		
 		return res.data;
 		//return await new Promise(async (resolve, reject) => {
 		// (`${url}/${endpoint}`, payload)

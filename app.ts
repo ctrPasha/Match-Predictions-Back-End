@@ -1,12 +1,8 @@
 import * as DatabaseService from "./services/database";
-import * as counterRoutes from './routes/counter';
+import * as footballDataRoutes from './routes/footballData';
 
 import express, { Request, Response } from "express";
-import sequelize from "sequelize";
 import cors from 'cors';
-
-//import sequelize from "./db/database";
-//import Counter from './models/counter';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +13,7 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-app.use('/counter', counterRoutes.router);
+app.use('/data', footballDataRoutes.router);
 
 app.get("/", (req: Request, res: Response) => {
     res.json({message: "Hello from Express + TypeScript!"});

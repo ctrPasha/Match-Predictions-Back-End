@@ -1,11 +1,11 @@
 import * as Models from "../models/index"
 
 import { Sequelize } from "sequelize";
-import path from 'path';
-import sequelize from "sequelize";
+
+let sequelizeConnection: Sequelize | undefined = undefined;
 
 export function connect(): Sequelize {
-	const sequelize = new Sequelize ({
+	sequelizeConnection = new Sequelize ({
 		dialect: 'mysql',
 		host: 'localhost',
 		port: 3300,
@@ -13,11 +13,12 @@ export function connect(): Sequelize {
 		password: '123456',
 		database: 'dev'
 	});
-	return sequelize;
+
+	return sequelizeConnection;
 }
 
 export async function init(): Promise<void> {
-	const connection = connect();
+	const connection = sequelizeConnection ? sequelizeConnection : connect();
 
 	Models.discoverModels(connection);
 

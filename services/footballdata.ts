@@ -2,19 +2,33 @@
 import * as RequestService from './request';
 import * as MatchesConverterService from './converter/match'
 import * as TeamsConverterService from './converter/team'
+import * as TeamDataController from '../controllers/teamdata';
+
+import { TeamModelInterface } from '../interfaces/models/teamodel';
+import { Teams } from '../interfaces/footballdata/teams';
 
 const BASE_URL = 'http://api.football-data.org/v4/';
 
-export async function getMatches(league: string, season: string): Promise<void> {
-	// 1. Read the config to get the api
-	// 2. Probably want to create a function in the RequestService to setHeaders(X-AUTH...) before making any calls
-	// 3. Setup the url with all the params
-	// 4. Call RequestService get/post with the url
-	// 5. Create a transform function, maybe in a separate service (something like a TransformerService)
-	// it will take a response that you will get here and transform into an object that you can use intenrally if 
-	// you need. So you will need to have an interface defined for it.
+const COMPETITION_CODES = ['PL', 'PD', 'BL1', 'FL1', 'DED', 'SA', 'PPL', 'CL'];
 
-	let endpoint = `${BASE_URL}competitions/${league}/matches`
+export const SEASON_COMPETITIONS = [
+    {
+        season: '2023',
+        competitions: ['PL', 'PD', 'BL1', 'CL', 'FL1', 'DED', 'SA', 'PPL']
+    },
+    {
+        season: '2024',
+        competitions: ['PL', 'PD', 'BL1', 'CL', 'FL1', 'DED', 'SA', 'PPL']
+    },
+    {
+        season: '2025',
+        competitions: ['PL', 'PD', 'BL1', 'CL', 'FL1', 'DED', 'SA', 'PPL']
+    },
+];
+
+export async function fetchAndSaveMatches(competitionCode: string, season: string): Promise<void> {
+
+	let endpoint = `${BASE_URL}competitions/${competitionCode}/matches`
 
 	if (season) {
 		endpoint += `?season=${season}`;
@@ -22,43 +36,60 @@ export async function getMatches(league: string, season: string): Promise<void> 
 
 	// Make a call to the request service, it will return any
 	const res = await RequestService.get(endpoint);
-	//console.log(res);
 	// parse service
 	const transformedMatches = MatchesConverterService.transformToMatches(res)
+
+	const matchesToCreate: any[] = [];
+
+	for (const transformedMatch of transformedMatches) {
+		//const exists = await;
+	}
 	console.log("Transformed Matches: ", JSON.stringify(transformedMatches, null, 4));
 }
 
-export async function getTeams(league: string, season: string): Promise <void> {
-	let endpoint = `${BASE_URL}competitions/${league}/teams`
+export async function fetchAndSaveTeams(competitionCode: string, season: string): Promise <void> {
+	validateCompetitionCode(competitionCode);
+
+	let endpoint = `${BASE_URL}competitions/${competitionCode}/teams`;
 
 	if (season) {
 		endpoint += `?season=${season}`;
 	}
+
 	const res = await RequestService.get(endpoint)
 
 	const transformedTeams = TeamsConverterService.transformTeam(res);
-	console.log("Transformed Matches: ", JSON.stringify(transformedTeams, null, 4));
+	const teamsToCreate: any[] = [];
+
+	for (const transformedTeam of transformedTeams) {
+		const exists = await TeamDataController.getUniqueTeam(
+			transformedTeam.team.name,
+			transformedTeam.season.year
+
+		);
+
+		if (!exists) {
+			teamsToCreate.push({
+				competitionCode: transformedTeam.competition.code,
+				competitionType: transformedTeam.competition.type,
+				seasonYear: transformedTeam.season.year,
+				areaName: transformedTeam.area.name,
+				areaCode: transformedTeam.area.code,
+				teamName: transformedTeam.team.name,
+				shortName: transformedTeam.team.shortName,
+				tla: transformedTeam.team.tla,
+				clubColors: transformedTeam.team.clubColors ?? null,
+				coachName: transformedTeam.team.coach?.name ?? null,
+				venue: transformedTeam.team.venue ?? null
+			});
+		}
+	}
+
+	await TeamDataController.bulkCreate(teamsToCreate);
 }
 
-// in Transformer:
-// wil return array of matches
-/*
-export function transformToMatches(res: any): Match[] {
-	const resObj = JSON.parse(res);
-
-	let matches: Match[] = [];
-	for (const match of resObj.matches) {
-		matches.push({
-			area: parseArea(match.area)
-		})
+function validateCompetitionCode(competitionCode: string): void {
+	if (!COMPETITION_CODES.includes(competitionCode)) {
+		throw new Error(`Invalid competition code provided: ${competitionCode}`);
 	}
 }
-
-function parseArea(res: any): Area {
-	return {
-		name: res.name
-	}
-}*/
-
-getMatches("PL", "2024")
-//getTeams("PL", "2025")
