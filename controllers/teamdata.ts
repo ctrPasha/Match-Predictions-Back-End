@@ -1,4 +1,3 @@
-import { TeamModelInterface } from "../interfaces/models/teamodel";
 import { SequelizeTeamModel } from "../models/teamdata";
 
 export async function create(
