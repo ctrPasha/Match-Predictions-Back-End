@@ -6,12 +6,14 @@ import path from 'path';
 
 import { BASE_URL } from './footballdata';
 
-async function downloadCrest(url: string, saveDir = 'assets') {
+async function downloadCrest(url: string, teamName: string, saveDir = 'assets') {
     if (!fs.existsSync(saveDir)) {
         fs.mkdirSync(saveDir, { recursive: true });
     }
 
-    const fileName = path.basename(url);
+    const parseName = teamName.replace(/[^a-z0-9]/gi, '_');
+    const extension = path.extname(url);
+    const fileName = `${parseName}${extension}`;
     const filePath = path.join(saveDir, fileName);
 
     if (fs.existsSync(filePath)) {
@@ -46,14 +48,13 @@ export async function fetchTeams(competitionCode: string, season: string, saveDi
     const res = await RequestService.get(endpoint);
 
     const transformedTeams = TeamsConverterService.transformTeam(res);
-    //console.log(JSON.stringify(transformedTeams, null, 2));
 
     const directory = saveDir ?? path.join('assets', competitionCode, season);
 
-    for (const transofrmTeam of transformedTeams) {
-        console.log(`Team: ${transofrmTeam.team.name}, Crest: ${transofrmTeam.team.crest}`);
-        if (transofrmTeam.team.crest) {
-            await downloadCrest(transofrmTeam.team.crest, directory);
+    for (const transformTeam of transformedTeams) {
+        console.log(`Team: ${transformTeam.team.name}, Crest: ${transformTeam.team.crest}`);
+        if (transformTeam.team.crest) {
+            await downloadCrest(transformTeam.team.crest, transformTeam.team.name, directory);
         }
     }
 }

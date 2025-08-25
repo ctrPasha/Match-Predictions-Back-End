@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { SEASON_COMPETITIONS } from "../services/footballdata";
+import { SEASON_COMPETITIONS } from "../season_competitions.config";
 
 export const router = Router();
 

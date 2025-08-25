@@ -27,8 +27,16 @@ router.get('/:teamIdentifier', async (req: Request, res: Response, next: NextFun
 		const teamIdentifier = req.params.teamIdentifier as string;
 		
 		const team = await FootballController.getTeamByPublicIdentifier(teamIdentifier);
+		const seasonFolder = team?.seasonYear.split('/')[0];
 
-		res.json(team);
+		if (!team) {
+			throw new Error(`${team} not found`)
+		}
+
+		const crestFile = team.teamName.replace(/[^a-z0-9]/gi, '_') + '.png';
+		const crestPath = `http://localhost:3000/assets/${team.competitionCode}/${seasonFolder}/${crestFile}`;
+
+		res.json({...team.dataValues, crest: crestPath});
 
 	} catch (err) {
 		next(err);
