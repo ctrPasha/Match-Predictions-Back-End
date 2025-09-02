@@ -18,6 +18,7 @@ export class SequelizeTeamModel extends Model {
     public coachName!: string | null;
 
     public venue!: string | null;
+    public founded!: number | null;
 
     public public_identifier!: string;
 }
@@ -79,6 +80,11 @@ export function init(sequelize: Sequelize): void {
             venue: {
                 type: DataTypes.STRING,
                 allowNull: true,
+            },
+
+            founded: {
+                type: DataTypes.INTEGER,
+                allowNull: true
             },
 
             public_identifier: {

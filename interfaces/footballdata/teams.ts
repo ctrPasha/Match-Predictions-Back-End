@@ -8,5 +8,4 @@ export interface Teams {
 	season: Season
 	area: Area;
 	team: Team;
-	crest?: string
 }

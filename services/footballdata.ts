@@ -84,11 +84,12 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
                 tla: transformedTeam.team.tla,
                 clubColors: transformedTeam.team.clubColors ?? null,
                 coachName: transformedTeam.team.coach?.name ?? null,
-                venue: transformedTeam.team.venue ?? null
+                venue: transformedTeam.team.venue ?? null,
+                founded: transformedTeam.team.founded
             });
         }
     }
-
+    //console.log("Transformed Teams:", JSON.stringify(transformedTeams, null, 2));
     await TeamDataController.bulkCreate(teamsToCreate);
 }
 

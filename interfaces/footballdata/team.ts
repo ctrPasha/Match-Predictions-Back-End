@@ -14,5 +14,6 @@ export interface Team {
 	clubColors?: string;
 	coach?: Coach;
     venue?: string;
+	founded?: number;
 }
 

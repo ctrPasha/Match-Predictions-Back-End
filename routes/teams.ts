@@ -4,6 +4,8 @@ import { Router, Request, Response, NextFunction } from "express";
 
 export const router = Router();
 
+const BASE_URL = 'http://localhost:3000/'
+
 router.get('/', async(req: Request, res: Response, next: NextFunction) => {
 	try {
 	const competitionCode = req.query.competition as string;
@@ -34,7 +36,7 @@ router.get('/:teamIdentifier', async (req: Request, res: Response, next: NextFun
 		}
 
 		const crestFile = team.teamName.replace(/[^a-z0-9]/gi, '_') + '.png';
-		const crestPath = `http://localhost:3000/assets/${team.competitionCode}/${seasonFolder}/${crestFile}`;
+		const crestPath = `${BASE_URL}assets/${team.competitionCode}/${seasonFolder}/${crestFile}`;
 
 		res.json({...team.dataValues, crest: crestPath});
 

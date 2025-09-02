@@ -47,13 +47,6 @@ async function fetchMatchesAndSeasons(): Promise<void> {
 
 	for (const seasons of SEASON_COMPETITIONS) {
 		for (const compCode of seasons.competitions) {
-
-			if (compCode === 'CL' && seasons.season === '2025') {
-				console.log(`Not adding the season: ${seasons.season} of ${compCode} 
-							to the DB, continuing the operation`);
-				continue;
-			}
-
 			counter += 1;
 
 			if (counter >= 10) {

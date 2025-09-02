@@ -18,7 +18,8 @@ export function parseTeam(res: any): Team {
 		crest: res.crest,
 		clubColors: res.clubColors,
 		coach: parseCoach(res.coach),
-		venue: res.venue
+		venue: res.venue,
+		founded: res.founded
 	};
 }
 
