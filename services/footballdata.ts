@@ -70,7 +70,7 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
     const teamsToCreate: any[] = [];
 
     for (const transformedTeam of transformedTeams) {
-        const exists = await TeamDataController.getUniqueTeam(transformedTeam.team.name, transformedTeam.season.year);
+        const exists = await TeamDataController.getUniqueTeam(transformedTeam.team.name, transformedTeam.season.year, transformedTeam.competition.code);
 
         if (!exists) {
             teamsToCreate.push({
@@ -90,6 +90,7 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
         }
     }
     //console.log("Transformed Teams:", JSON.stringify(transformedTeams, null, 2));
+    console.log("Teams to insert:", teamsToCreate);
     await TeamDataController.bulkCreate(teamsToCreate);
 }
 

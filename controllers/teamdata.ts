@@ -52,11 +52,13 @@ export async function get(
 export async function getUniqueTeam(
     teamName: string,
     seasonYear: string,
+    competitionCode: string,
 ): Promise<SequelizeTeamModel | null> {
     return await SequelizeTeamModel.findOne({
         where: {
             teamName,
-            seasonYear
+            seasonYear,
+            competitionCode
         },
     });
 }
