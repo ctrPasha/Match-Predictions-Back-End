@@ -51,7 +51,7 @@ export async function getUniqueMatch(
             seasonYear,
             match_id
         }
-    })
+    });
 }
 
 export async function getLeagueMatches(competitionCode: string, seasonYear: string): Promise<SequelizeMatchModel[]> {

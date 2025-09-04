@@ -23,11 +23,10 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
 
     const matchesToCreate: any[] = [];
 
-	
     for (const transformedMatch of transformedMatches) {
         const exists = await MatchDataController.getUniqueMatch(
             transformedMatch.homeTeam.name,
-            transformedMatch.awayTeam.name,	
+            transformedMatch.awayTeam.name,
             transformedMatch.season.year,
             transformedMatch.id
         );
@@ -48,7 +47,7 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 halfTimeHome: transformedMatch.score.halfTime.home,
                 halfTimeAway: transformedMatch.score.halfTime.away,
                 match_id: transformedMatch.id,
-				matchDate: transformedMatch.matchDate
+                matchDate: transformedMatch.matchDate
             });
         }
     }
@@ -70,7 +69,11 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
     const teamsToCreate: any[] = [];
 
     for (const transformedTeam of transformedTeams) {
-        const exists = await TeamDataController.getUniqueTeam(transformedTeam.competition.code, transformedTeam.team.name, transformedTeam.season.year);
+        const exists = await TeamDataController.getUniqueTeam(
+            transformedTeam.competition.code,
+            transformedTeam.team.name,
+            transformedTeam.season.year
+        );
 
         if (!exists) {
             teamsToCreate.push({
@@ -90,7 +93,7 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
         }
     }
     //console.log("Transformed Teams:", JSON.stringify(transformedTeams, null, 2));
-    console.log("Teams to insert:", teamsToCreate);
+    console.log('Teams to insert:', teamsToCreate);
     await TeamDataController.bulkCreate(teamsToCreate);
 }
 

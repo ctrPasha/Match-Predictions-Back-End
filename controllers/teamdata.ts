@@ -58,7 +58,7 @@ export async function getUniqueTeam(
         where: {
             competitionCode,
             shortName,
-            seasonYear,
+            seasonYear
         }
     });
 }
