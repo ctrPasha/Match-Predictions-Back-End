@@ -22,7 +22,8 @@ export class SequelizeMatchModel extends Model {
     public halfTmeAway!: number;
 
 	public match_id!: number;
-    public public_identifier!: string;
+    public homeTeamPublicId!: string;
+    public awayTeamPublicId!:string;
 }
 
 export function init(sequelize: Sequelize): void {
@@ -94,12 +95,18 @@ export function init(sequelize: Sequelize): void {
 				type: DataTypes.STRING
 			},
 
-            public_identifier: {
-                type: DataTypes.UUID,
-                allowNull: false,
-                unique: true,
-                defaultValue: () => uuidv4()
-            }
+            homeTeamPublicId: {
+                type: DataTypes.STRING,
+                unique: false,
+                allowNull: false
+            },
+
+             awayTeamPublicId: {
+                type: DataTypes.STRING,
+                unique: false,
+                allowNull: false
+            },
+
         },
         {
             sequelize,

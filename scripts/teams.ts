@@ -3,6 +3,7 @@ import * as DataBase from '../services/database';
 
 import args from 'args';
 import { SEASON_COMPETITIONS } from '../season_competitions.config';
+import { Sequelize } from 'sequelize';
 
 // 1. We need to make a script that will call FootbalDataService.getTeams -> to populate the db.
 // 2. Script needs to accept arguments (in the args module used it's options) -> competition and season (2025 etc).
@@ -15,7 +16,7 @@ args.option('fetch-all', 'Fetches data from multiple seasons and competitions');
 
 const options = args.parse(process.argv);
 
-async function main(): Promise<void> {
+async function main(): Promise<Sequelize> {
     await DataBase.init();
     console.log('Connected to DB Successfuly!');
 

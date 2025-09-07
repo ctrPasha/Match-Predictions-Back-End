@@ -1,4 +1,5 @@
 import { SequelizeTeamModel } from '../models/teamdata';
+import {v4 as uuid} from 'uuid'
 
 export async function create(
     competitionCode: string,
@@ -11,7 +12,8 @@ export async function create(
     tla: string,
     clubColors: string,
     coachName: string,
-    venue: string
+    venue: string,
+    publicId: string | null
 ): Promise<SequelizeTeamModel> {
     return await SequelizeTeamModel.create(
         {
@@ -25,7 +27,8 @@ export async function create(
             tla,
             clubColors,
             coachName,
-            venue
+            venue,
+            public_identifier: publicId ? publicId : uuid()
         },
         {
             //transaction:
@@ -48,7 +51,6 @@ export async function get(teamName: string): Promise<SequelizeTeamModel | null> 
 
 // Gets a specific team based on the league, the team name, and the seasonYear(eg: PL/Liverpool?season=2024/2025)
 // Also used for check if that team exists in the DB
-
 export async function getUniqueTeam(
     competitionCode: string,
     shortName: string,
@@ -63,6 +65,17 @@ export async function getUniqueTeam(
     });
 }
 
+// areaCode and shortName or full name -> rturn team or a null
+// We need a function that will grab us a team from db if it exists, based onlu on team name and area code.
+export async function getTeamByNameAndArea(shortName: string, areaCode: string): Promise<SequelizeTeamModel | null> {
+    return await SequelizeTeamModel.findOne({
+        where: {
+            shortName,
+            areaCode
+        }
+    })
+}
+
 // Fetches teams by the league(competition) code(eg. PL, BL1, SA, etc) and season year
 export async function getLeagueTeams(competitionCode: string, seasonYear: string): Promise<SequelizeTeamModel[]> {
     return await SequelizeTeamModel.findAll({
@@ -74,10 +87,10 @@ export async function getLeagueTeams(competitionCode: string, seasonYear: string
 }
 
 // Fetches a team from the db pased on its unique identifier
-export async function getTeamByPublicIdentifier(public_identifier: string): Promise<SequelizeTeamModel | null> {
+export async function getTeamByPublicIdentifier(publicId: string): Promise<SequelizeTeamModel | null> {
     return await SequelizeTeamModel.findOne({
         where: {
-            public_identifier
+            publicId
         }
     });
 }

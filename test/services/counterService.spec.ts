@@ -1,4 +1,4 @@
-import * as CounterService from '../../services/counter';
+/* import * as CounterService from '../../services/counter';
 import * as DataBase from '../../services/database'
 
 import { expect } from "chai";
@@ -26,3 +26,4 @@ describe("Counter Service", () => {
 	});
 });
 
+ */

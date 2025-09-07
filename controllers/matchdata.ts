@@ -1,4 +1,5 @@
 import { SequelizeMatchModel } from '../models/matchdata';
+import {v4 as uuid} from 'uuid'
 
 export async function create(
     areaName: string,
@@ -14,7 +15,9 @@ export async function create(
     fullTimeAway: number,
     halfTimeHome: number,
     halfTmeAway: number,
-    match_id: number
+    match_id: number,
+    homeTeamPublicId: string,
+    awayTeamPublicId: string
 ): Promise<SequelizeMatchModel> {
     return await SequelizeMatchModel.create({
         areaName,
@@ -30,7 +33,9 @@ export async function create(
         fullTimeAway,
         halfTimeHome,
         halfTmeAway,
-        match_id
+        match_id,
+        homeTeamPublicId: homeTeamPublicId ? homeTeamPublicId : uuid(),
+        awayTeamPublicId: awayTeamPublicId ? awayTeamPublicId : uuid()
     });
 }
 
@@ -54,6 +59,15 @@ export async function getUniqueMatch(
     });
 }
 
+export async function getMatchByNameAndArea(areaCode: string, teamName: string): Promise<SequelizeMatchModel | null> {
+    return await SequelizeMatchModel.findOne({
+        where: {
+            areaCode,
+            teamName
+        }
+    })
+}
+
 export async function getLeagueMatches(competitionCode: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
     return await SequelizeMatchModel.findAll({
         where: {
@@ -70,3 +84,24 @@ export async function getMatchByPublicId(match_identifier: string): Promise<Sequ
         }
     });
 }
+
+export async function getMatchFixtures(competitionCode: string, teamName: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
+    return await SequelizeMatchModel.findAll({
+        where : {
+            competitionCode,
+            teamName,
+            seasonYear
+        }
+    });
+}
+
+/* export async function getMatchResults(competitionCode: string, teamName: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
+     return await SequelizeMatchModel.findAll({
+        where : {
+            competitionCode,
+            teamName,
+            seasonYear
+        
+        }
+    });
+} */

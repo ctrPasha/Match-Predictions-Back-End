@@ -5,6 +5,8 @@ import * as TeamsConverterService from './converter/team';
 import * as TeamDataController from '../controllers/teamdata';
 import * as MatchDataController from '../controllers/matchdata';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export const BASE_URL = 'http://api.football-data.org/v4/';
 
 const COMPETITION_CODES = ['PL', 'PD', 'BL1', 'FL1', 'DED', 'SA', 'PPL', 'CL'];
@@ -25,10 +27,19 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
 
     for (const transformedMatch of transformedMatches) {
         const exists = await MatchDataController.getUniqueMatch(
-            transformedMatch.homeTeam.name,
-            transformedMatch.awayTeam.name,
+            transformedMatch.homeTeam.shortName,
+            transformedMatch.awayTeam.shortName,
             transformedMatch.season.year,
             transformedMatch.id
+        );
+
+        const homeTeam = await TeamDataController.getTeamByNameAndArea(
+            transformedMatch.homeTeam.shortName,
+            transformedMatch.area.code
+        );
+        const awayTeam = await TeamDataController.getTeamByNameAndArea(
+            transformedMatch.awayTeam.shortName,
+            transformedMatch.area.code
         );
 
         if (!exists) {
@@ -38,8 +49,8 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 competitionCode: transformedMatch.competition.code,
                 competitionType: transformedMatch.competition.type,
                 seasonYear: transformedMatch.season.year,
-                homeTeamName: transformedMatch.homeTeam.name,
-                awayTeamName: transformedMatch.awayTeam.name,
+                homeTeamName: transformedMatch.homeTeam.shortName,
+                awayTeamName: transformedMatch.awayTeam.shortName,
                 scoreWinner: transformedMatch.score.winner,
                 scoreDuration: transformedMatch.score.duration,
                 fullTimeHome: transformedMatch.score.fullTime.home,
@@ -47,7 +58,9 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 halfTimeHome: transformedMatch.score.halfTime.home,
                 halfTimeAway: transformedMatch.score.halfTime.away,
                 match_id: transformedMatch.id,
-                matchDate: transformedMatch.matchDate
+                matchDate: transformedMatch.matchDate,
+                homeTeamPublicId: homeTeam ? homeTeam.publicId : uuidv4(),
+                awayTeamPublicId: awayTeam ? awayTeam.publicId : uuidv4()
             });
         }
     }
@@ -71,9 +84,17 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
     for (const transformedTeam of transformedTeams) {
         const exists = await TeamDataController.getUniqueTeam(
             transformedTeam.competition.code,
-            transformedTeam.team.name,
+            transformedTeam.team.shortName,
             transformedTeam.season.year
         );
+
+        const existingTeam = await TeamDataController.getTeamByNameAndArea(
+            transformedTeam.team.shortName,
+            transformedTeam.area.code
+        );
+
+        // 3. What i would do is to assign a public identifer to matches. So that you will have homeTeamPublicIdentifier
+        // and away teamPublic identifier. This will make search way faster, as you can just pass the identifiers to find the matches.
 
         if (!exists) {
             teamsToCreate.push({
@@ -88,7 +109,8 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
                 clubColors: transformedTeam.team.clubColors ?? null,
                 coachName: transformedTeam.team.coach?.name ?? null,
                 venue: transformedTeam.team.venue ?? null,
-                founded: transformedTeam.team.founded
+                founded: transformedTeam.team.founded,
+                publicId: existingTeam ? existingTeam.publicId : uuidv4()
             });
         }
     }

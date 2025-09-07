@@ -3,9 +3,9 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"test": "mocha --require ts-node/register test/**.spec.ts",
+		"test": "mocha --require ts-node/register --recursive ./test/**/*.spec.ts --exit",
 		"start": "node out/app.js",
-		"dev": "tsc && nodemon out/app.js",
+		"dev": "set NODE_ENV=dev && tsc && nodemon out/app.js",
 		"db:migrate:up": "ts-node scripts/migration.ts --up",
 		"db:migrate:down": "ts-node scripts/migration.ts --down"
 	},
