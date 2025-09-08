@@ -32,7 +32,7 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
             transformedMatch.season.year,
             transformedMatch.id
         );
-
+        
         const homeTeam = await TeamDataController.getTeamByNameAndArea(
             transformedMatch.homeTeam.shortName,
             transformedMatch.area.code
@@ -51,7 +51,7 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 seasonYear: transformedMatch.season.year,
                 homeTeamName: transformedMatch.homeTeam.shortName,
                 awayTeamName: transformedMatch.awayTeam.shortName,
-                scoreWinner: transformedMatch.score.winner,
+                scoreWinner: transformedMatch.score.winner ?? null,
                 scoreDuration: transformedMatch.score.duration,
                 fullTimeHome: transformedMatch.score.fullTime.home,
                 fullTimeAway: transformedMatch.score.fullTime.away,

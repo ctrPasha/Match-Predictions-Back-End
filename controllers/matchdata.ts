@@ -1,5 +1,6 @@
+import { Op } from 'sequelize';
 import { SequelizeMatchModel } from '../models/matchdata';
-import {v4 as uuid} from 'uuid'
+import { v4 as uuid } from 'uuid';
 
 export async function create(
     areaName: string,
@@ -65,7 +66,7 @@ export async function getMatchByNameAndArea(areaCode: string, teamName: string):
             areaCode,
             teamName
         }
-    })
+    });
 }
 
 export async function getLeagueMatches(competitionCode: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
@@ -85,23 +86,37 @@ export async function getMatchByPublicId(match_identifier: string): Promise<Sequ
     });
 }
 
-export async function getMatchFixtures(competitionCode: string, teamName: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
+export async function getMatchFixtures(teamPublicId: string): Promise<SequelizeMatchModel[]> {
     return await SequelizeMatchModel.findAll({
-        where : {
-            competitionCode,
-            teamName,
-            seasonYear
+        where: {
+            [Op.or]: [
+                {
+                    homeTeamPublicId: teamPublicId
+                },
+
+                {
+                    awayTeamPublicId: teamPublicId
+                }
+            ],
+            scoreWinner: null
         }
     });
 }
 
-/* export async function getMatchResults(competitionCode: string, teamName: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
-     return await SequelizeMatchModel.findAll({
-        where : {
-            competitionCode,
-            teamName,
+export async function getMatchResults(teamPublicId: string, seasonYear: string): Promise<SequelizeMatchModel[]> {
+    return await SequelizeMatchModel.findAll({
+        where: {
+            [Op.or]: [
+                {
+                    homeTeamPublicId: teamPublicId
+                },
+
+                {
+                    awayTeamPublicId: teamPublicId
+                }
+            ],
             seasonYear
-        
-        }
+        },
+        limit: 5
     });
-} */
+}

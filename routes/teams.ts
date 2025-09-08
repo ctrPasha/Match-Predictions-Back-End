@@ -1,11 +1,12 @@
-import * as FootballController from '../controllers/teamdata';
+import * as TeamDataController from '../controllers/teamdata';
 
 import { Router, Request, Response, NextFunction } from 'express';
+import { BASE_URL } from './footballData';
 
 export const router = Router();
 
-const BASE_URL = 'http://localhost:3000/';
 
+// Fetches teams for a specific league(ex: PL, BL1, CL etc..)
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const competitionCode = req.query.competition as string;
@@ -15,7 +16,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
             throw new Error('Invalid Season');
         }
 
-        const currTeams = await FootballController.getLeagueTeams(competitionCode, seasonYear);
+        const currTeams = await TeamDataController.getLeagueTeams(competitionCode, seasonYear);
 
         res.json(currTeams);
     } catch (err) {
@@ -44,6 +45,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 	}
 }); */
 
+// Fetches the specific team based off the competition code and its short-name(ex: Liverpool instead of Liverpool FC)
 router.get('/:competitionCode/:shortName', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const competitionCode = req.params.competitionCode as string;
@@ -52,7 +54,7 @@ router.get('/:competitionCode/:shortName', async (req: Request, res: Response, n
 
         const formattedName = shortName.replace(/-/g, ' ');
 
-        const team = await FootballController.getUniqueTeam(competitionCode, formattedName, season);
+        const team = await TeamDataController.getUniqueTeam(competitionCode, formattedName, season);
         const seasonFolder = team?.seasonYear.split('/')[0];
 
         if (!team) {

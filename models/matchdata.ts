@@ -63,7 +63,8 @@ export function init(sequelize: Sequelize): void {
             },
 
             scoreWinner: {
-                type: DataTypes.STRING
+                type: DataTypes.STRING,
+                allowNull: true
             },
 
             scoreDuration: {
@@ -71,19 +72,23 @@ export function init(sequelize: Sequelize): void {
             },
 
             fullTimeHome: {
-                type: DataTypes.INTEGER
+                type: DataTypes.INTEGER,
+                allowNull: true
             },
 
             fullTimeAway: {
-                type: DataTypes.INTEGER
+                type: DataTypes.INTEGER,
+                allowNull: true
             },
 
             halfTimeHome: {
-                type: DataTypes.INTEGER
+                type: DataTypes.INTEGER,
+                allowNull: true
             },
 
             halfTimeAway: {
-                type: DataTypes.INTEGER
+                type: DataTypes.INTEGER,
+                allowNull: true
             },
 
 			match_id: {
