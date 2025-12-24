@@ -19,6 +19,7 @@ export function transformToMatches(res: any): Match[] {
             matchDate: DateConverterService.getDate(match.utcDate),
             homeTeam: TeamsConverterService.parseMatchTeam(match.homeTeam),
             awayTeam: TeamsConverterService.parseMatchTeam(match.awayTeam),
+            status: match.status ?? null,
             score: ScoreConverterService.parseScore(
                 match.score,
                 match.homeTeam.name,

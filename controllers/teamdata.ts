@@ -76,6 +76,14 @@ export async function getTeamByNameAndArea(shortName: string, areaCode: string):
     })
 }
 
+export async function getTeamByName(shortName: string): Promise<SequelizeTeamModel | null> {
+    return await SequelizeTeamModel.findOne({
+        where: {
+            shortName,
+        }
+    })
+}
+
 // Fetches teams by the league(competition) code(eg. PL, BL1, SA, etc) and season year
 export async function getLeagueTeams(competitionCode: string, seasonYear: string): Promise<SequelizeTeamModel[]> {
     return await SequelizeTeamModel.findAll({

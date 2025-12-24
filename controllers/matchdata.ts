@@ -78,10 +78,10 @@ export async function getLeagueMatches(competitionCode: string, seasonYear: stri
     });
 }
 
-export async function getMatchByPublicId(match_identifier: string): Promise<SequelizeMatchModel | null> {
+export async function getMatchByMatchId(match_id: string): Promise<SequelizeMatchModel | null> {
     return await SequelizeMatchModel.findOne({
         where: {
-            match_identifier
+            match_id
         }
     });
 }
@@ -98,7 +98,7 @@ export async function getMatchFixtures(teamPublicId: string): Promise<SequelizeM
                     awayTeamPublicId: teamPublicId
                 }
             ],
-            scoreWinner: null
+            scoreWinner: null 
         }
     });
 }
@@ -115,8 +115,9 @@ export async function getMatchResults(teamPublicId: string, seasonYear: string):
                     awayTeamPublicId: teamPublicId
                 }
             ],
+            status: 'FINISHED',
             seasonYear
         },
-        limit: 5
+        limit: 100
     });
 }

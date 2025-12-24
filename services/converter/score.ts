@@ -16,15 +16,18 @@ export function parseScore(res: any, homeTeam: string, awayTeam: string): Score 
 
     return {
         winner: winningTeam ?? null,
-        duration: res.duration ?? 'Unknown',
+        duration: res.duration,
         fullTime: parseFullScore(res.fullTime),
-        halfTime: parseFullScore(res.halfTime)
+        halfTime: parseFullScore(res.halfTime),
+        regularTime: parseFullScore(res.regularTime),
+        extraTime: parseFullScore(res.extraTime),
+        penalties: parseFullScore(res.penalties)
     };
 }
 
 export function parseFullScore(res: any): FullScore {
     return {
-        home: res.home ?? null,
-        away: res.away ?? null
+        home: res?.home ?? null,
+        away: res?.away ?? null,
     };
 }

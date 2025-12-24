@@ -61,7 +61,7 @@ router.get('/:competitionCode/:shortName', async (req: Request, res: Response, n
             throw new Error(`${team} not found`);
         }
 
-        const crestFile = team.teamName.replace(/[^a-z0-9]/gi, '_') + '.png';
+        const crestFile = team.shortName.replace(/[^a-z0-9]/gi, '_') + '.png';
         const crestPath = `${BASE_URL}assets/${team.competitionCode}/${seasonFolder}/${crestFile}`;
 
         res.json({ ...team.dataValues, crest: crestPath });

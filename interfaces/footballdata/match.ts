@@ -10,6 +10,7 @@ export interface Match {
 	competition: Competition;
 	season: Season;
 	id: number;
+	status: string;
 	matchDate: string;
 	homeTeam: MatchTeam;
 	awayTeam: MatchTeam;

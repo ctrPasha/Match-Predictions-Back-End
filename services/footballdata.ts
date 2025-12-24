@@ -26,23 +26,50 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
     const matchesToCreate: any[] = [];
 
     for (const transformedMatch of transformedMatches) {
-        const exists = await MatchDataController.getUniqueMatch(
+        const existingMatch = await MatchDataController.getUniqueMatch(
             transformedMatch.homeTeam.shortName,
             transformedMatch.awayTeam.shortName,
             transformedMatch.season.year,
             transformedMatch.id
         );
-        
-        const homeTeam = await TeamDataController.getTeamByNameAndArea(
-            transformedMatch.homeTeam.shortName,
-            transformedMatch.area.code
-        );
-        const awayTeam = await TeamDataController.getTeamByNameAndArea(
-            transformedMatch.awayTeam.shortName,
-            transformedMatch.area.code
-        );
+        // If the match exists you can check the difference between what is returned (exists aka existing match) and some
+        // properties you are interested in from the api. For example: if in your db match exists, but it is not finished, but
+        // api response returned finished, you want to update the record in your db with new info.
 
-        if (!exists) {
+        // updateMatch (exist):
+
+        // if the match exists look for changes in status, and score.halfTime.away/home and update it accordingly.
+        if (existingMatch) {
+            if (existingMatch.status !== transformedMatch.status) {
+                existingMatch.status = transformedMatch.status;
+            }
+
+            if (
+                existingMatch.fullTimeHome !== transformedMatch.score.fullTime.home ||
+                existingMatch.fullTimeAway !== transformedMatch.score.fullTime.away 
+            ) {
+                existingMatch.fullTimeHome = transformedMatch.score.fullTime.home ?? 0;
+                existingMatch.fullTimeAway = transformedMatch.score.fullTime.away ?? 0;
+            }
+
+            if (existingMatch.halfTimeHome !== transformedMatch.score.halfTime.home || 
+                existingMatch.halfTimeAway !== transformedMatch.score.halfTime.away
+            ) {
+                existingMatch.halfTimeHome = transformedMatch.score.halfTime.home ?? 0;
+                existingMatch.halfTimeAway = transformedMatch.score.halfTime.away ?? 0;
+            }
+
+            if (existingMatch.scoreWinner != transformedMatch.score.winner) {
+                existingMatch.scoreWinner = transformedMatch.score.winner ?? '';
+            }
+
+            await existingMatch.save();
+        }
+
+        const homeTeam = await TeamDataController.getTeamByName(transformedMatch.homeTeam.shortName);
+        const awayTeam = await TeamDataController.getTeamByName(transformedMatch.awayTeam.shortName);
+
+        if (!existingMatch) {
             matchesToCreate.push({
                 areaName: transformedMatch.area.name,
                 areaCode: transformedMatch.area.code,
@@ -52,12 +79,19 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 homeTeamName: transformedMatch.homeTeam.shortName,
                 awayTeamName: transformedMatch.awayTeam.shortName,
                 scoreWinner: transformedMatch.score.winner ?? null,
-                scoreDuration: transformedMatch.score.duration,
+                duration: transformedMatch.score.duration ?? null,
                 fullTimeHome: transformedMatch.score.fullTime.home,
                 fullTimeAway: transformedMatch.score.fullTime.away,
                 halfTimeHome: transformedMatch.score.halfTime.home,
                 halfTimeAway: transformedMatch.score.halfTime.away,
+                regularTimeHome: transformedMatch.score.regularTime.home ?? null,
+                regularTimeAway: transformedMatch.score.regularTime.away ?? null,
+                extraTimeHome: transformedMatch.score.extraTime.home ?? null,
+                extraTimeAway: transformedMatch.score.extraTime.away ?? null,
+                penaltiesHome: transformedMatch.score.penalties.home ?? null,
+                penaltiesAway: transformedMatch.score.penalties.away ?? null,
                 match_id: transformedMatch.id,
+                status: transformedMatch.status,
                 matchDate: transformedMatch.matchDate,
                 homeTeamPublicId: homeTeam ? homeTeam.publicId : uuidv4(),
                 awayTeamPublicId: awayTeam ? awayTeam.publicId : uuidv4()

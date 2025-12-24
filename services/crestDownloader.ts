@@ -6,12 +6,12 @@ import path from 'path';
 
 import { BASE_URL } from './footballdata';
 
-async function downloadCrest(url: string, teamName: string, saveDir = 'assets') {
+async function downloadCrest(url: string, teamShortName: string, saveDir = 'assets') {
     if (!fs.existsSync(saveDir)) {
         fs.mkdirSync(saveDir, { recursive: true });
     }
 
-    const parseName = teamName.replace(/[^a-z0-9]/gi, '_');
+    const parseName = teamShortName.replace(/[^a-z0-9]/gi, '_');
     const extension = path.extname(url);
     const fileName = `${parseName}${extension}`;
     const filePath = path.join(saveDir, fileName);
@@ -54,7 +54,7 @@ export async function fetchTeams(competitionCode: string, season: string, saveDi
     for (const transformTeam of transformedTeams) {
         console.log(`Team: ${transformTeam.team.name}, Crest: ${transformTeam.team.crest}`);
         if (transformTeam.team.crest) {
-            await downloadCrest(transformTeam.team.crest, transformTeam.team.name, directory);
+            await downloadCrest(transformTeam.team.crest, transformTeam.team.shortName, directory);
         }
     }
 }

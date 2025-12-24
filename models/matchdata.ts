@@ -1,4 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
+import { transpileModule } from 'typescript';
 import { v4 as uuidv4 } from 'uuid';
 export class SequelizeMatchModel extends Model {
     public areaName!: string;
@@ -13,15 +14,25 @@ export class SequelizeMatchModel extends Model {
     public awayTeamName!: string;
 
     public scoreWinner!: string;
-    public scoreDuration!: string;
+    public duration!: string;
 
-    public fulltimeHome!: number;
+    public fullTimeHome!: number;
     public fullTimeAway!: number;
 
     public halfTimeHome!: number;
-    public halfTmeAway!: number;
+    public halfTimeAway!: number;
+
+    public regularTimeHome!: number;
+    public regularTimeAway!: number;
+
+    public extraTimeHome!: number;
+    public extraTimeAway!: number;
+
+    public penaltiesHome!: number;
+    public penaltiesAway!: number;
 
 	public match_id!: number;
+    public status!: string;
     public homeTeamPublicId!: string;
     public awayTeamPublicId!:string;
 }
@@ -67,8 +78,9 @@ export function init(sequelize: Sequelize): void {
                 allowNull: true
             },
 
-            scoreDuration: {
-                type: DataTypes.STRING
+            duration: {
+                type: DataTypes.STRING,
+                allowNull: true
             },
 
             fullTimeHome: {
@@ -91,10 +103,45 @@ export function init(sequelize: Sequelize): void {
                 allowNull: true
             },
 
+            regularTimeHome: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            regularTimeAway: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            extraTimeHome: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            extraTimeAway: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            penaltiesHome: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            penaltiesAway: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
 			match_id: {
 				type: DataTypes.INTEGER,
 				unique: true
 			},
+
+            status: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
 
 			matchDate: {
 				type: DataTypes.STRING
@@ -111,6 +158,7 @@ export function init(sequelize: Sequelize): void {
                 unique: false,
                 allowNull: false
             },
+
 
         },
         {
