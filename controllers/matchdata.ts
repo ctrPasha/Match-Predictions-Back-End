@@ -121,3 +121,12 @@ export async function getMatchResults(teamPublicId: string, seasonYear: string):
         limit: 100
     });
 }
+
+export async function getMatchByLeague(competitionCode: string): Promise<SequelizeMatchModel[]> {
+    return await SequelizeMatchModel.findAll({
+        where: {
+            status: 'FINISHED',
+            competitionCode
+        }
+    });
+}

@@ -1,12 +1,15 @@
-import { MatchPrediction } from '../interfaces/predictions/goals';
+import { MatchPrediction, PredictionResult,  } from '../interfaces/predictions/goals';
 
 /*
 	TODO:
-		Figure out a way to implement 
+		Figure out a way to on how to implement a teams current form into the predictions
+		so for example historical data can have a certain weight on the final outcome of the prediction
+		while the recent data has a different weight, and adjust to get the most accurate rating
+		somethign similar to what 537 score predictions did. 
 */
 
 // the module used to predict the final scores of the two teams 
-export function predictGoals(matches: MatchPrediction[], homePublicId: string, awayPublicId: string) {
+export function predictGoals(matches: MatchPrediction[], homePublicId: string, awayPublicId: string): PredictionResult {
 	// Grab all games for that specific home team
 	let teamHomeGames = matches.filter((match) => {
 		return match.homeTeamPublicId === homePublicId;
@@ -16,6 +19,10 @@ export function predictGoals(matches: MatchPrediction[], homePublicId: string, a
 	let teamAwayGames = matches.filter((match) => {
 		return match.awayTeamPublicId === awayPublicId;
 	})
+
+	if (teamHomeGames.length === 0 || teamAwayGames.length === 0 || matches.length === 0) {
+		throw new Error("Array is empty, cannot gather data");
+	}
 
 	// Calculating league averages 
 	let leagueAvgGoalsHome = avg(matches.map((match) => match.fullTimeHome));
@@ -34,8 +41,10 @@ export function predictGoals(matches: MatchPrediction[], homePublicId: string, a
 	// xGAway = Attack strength of away team * defense strength of home team * league average goals scored away
 	let xGHome = homeAttack * awayDefense * leagueAvgGoalsHome;
 	let xGAway = awayAttack * homeDefense * leagueAvgGoalsAway;
-	
+
 	return {
+		homePublicId,
+		awayPublicId,
 		xGHome,
 		xGAway
 	}

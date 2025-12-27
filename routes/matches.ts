@@ -1,4 +1,5 @@
 import * as MatchDataController from '../controllers/matchdata';
+import * as GoalPredictionService from '../services/goalPrediction';
 import { Router, Request, Response, NextFunction } from 'express';
 import { BASE_URL } from './footballData';
 
@@ -36,6 +37,27 @@ router.get('/:teamId/fixtures', async (req: Request, res: Response, next: NextFu
 			upcomingMatches
 		});
 	} catch(err) {
+		next(err);
+	}
+});
+
+router.get('/:teamId/fixtures/predictions/goals', async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const teamIdentifier = req.params.teamId as string;
+		const upcomingMatches = await MatchDataController.getMatchFixtures(teamIdentifier);
+		const competitionCode =  req.query.competitionCode as string;
+		const homeId = req.query.homeId as string;
+		const awayId = req.query.awayId as string;
+		
+		const predictionModel = await GoalPredictionService.fetchAndCalculatePredictions(competitionCode, homeId, awayId);
+		console.log(predictionModel);
+		res.json({
+			success: true,
+			upcomingMatches,
+			predictionModel
+		});
+	} catch (err) {
+		console.log(err);
 		next(err);
 	}
 });
