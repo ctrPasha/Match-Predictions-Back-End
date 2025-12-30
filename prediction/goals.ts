@@ -29,12 +29,12 @@ export function predictGoals(matches: MatchPrediction[], homePublicId: string, a
 	let leagueAvgGoalsAway = avg(matches.map((match) => match.fullTimeAway));
 
 	// Calculating attack strengths for each team
-	let homeAttack = predictHomeAttack(teamHomeGames, leagueAvgGoalsHome);
-	let awayAttack = predictAwayAttack(teamAwayGames, leagueAvgGoalsAway);
+	let homeAttack = getPredictedGoals(teamHomeGames, leagueAvgGoalsHome, true);
+	let awayAttack = getPredictedGoals(teamAwayGames, leagueAvgGoalsAway, false);
 
 	// Calculating defense strengths for each team
-	let homeDefense = predictHomeDefense(teamHomeGames, leagueAvgGoalsAway);
-	let awayDefense = predictAwayDefense(teamAwayGames, leagueAvgGoalsHome);
+	let homeDefense = getPredictedGoals(teamHomeGames, leagueAvgGoalsAway, false);
+	let awayDefense = getPredictedGoals(teamAwayGames, leagueAvgGoalsHome, true);
 
 	// according to the poisson module: https://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/
 	// xGHome = Attack strength of home team * defense strength of away team * league average goals scored home
@@ -50,39 +50,31 @@ export function predictGoals(matches: MatchPrediction[], homePublicId: string, a
 	}
 }
 
-// Home attack strength = The teams avg home goals/ league avg home goals
-function predictHomeAttack(homeMatches: MatchPrediction[], leagueAvgGoalsHome: number) {
-	let avgGoalsHome = avg(homeMatches.map((matches) => {
-		return matches.fullTimeHome;
-	}));
-	return avgGoalsHome / leagueAvgGoalsHome;
-}
+/**********************************************************************************
+    Home attack strength = The teams avg home goals/ league avg home goals
+	away attack strength = the aways team avg goals scored away / league avg away
+	home defense = home teams goals conceded/ league average at home conceded
+	away defense = the teams away goals conceded / league average away conceded 
+**********************************************************************************/ 
+function getPredictedGoals(matchPredictions: MatchPrediction[], leagueAvgGoals: number, homeMatch: boolean): number {
+	const games = matchPredictions.map(match => {
+		return homeMatch ? match.fullTimeHome : match.fullTimeAway;
+	})
 
-// away attack strength = the aways team avg goals scored away / league avg away
-function predictAwayAttack(awayMatches:MatchPrediction[], leagueAvgGoalsAway: number) {
-	let avgGoalsAway = avg(awayMatches.map((matches) => {
-		return matches.fullTimeAway;
-	}));
-	return avgGoalsAway / leagueAvgGoalsAway;
-}
+	let avgGoals = avg(games);
 
-// home defense = home teams goals conceded/ league average at home conceded
-function predictHomeDefense(homeMatches: MatchPrediction[], leagueAvgConcededHome: number) {
-	let homeDefense = avg(homeMatches.map((matches) => {
-		return matches.fullTimeAway;
-	}))
-	return homeDefense / leagueAvgConcededHome;
-}
-
-// away defense = the teams away goals conceded / league average away conceded 
-function predictAwayDefense(awayMatches: MatchPrediction[], leagueAvgConcededAway: number) {
-	let awayDefense = avg(awayMatches.map((matches) => {
-		return matches.fullTimeHome;
-	}))
-	return awayDefense / leagueAvgConcededAway;
+	return avgGoals / leagueAvgGoals;
 }
 
 // Function for calculating an average, since im a noobie, had to grab the source code from reddit
 function avg(num: number[]): number {
+	if (num.length === 0) {
+		throw new Error("Cant calculate an empty data set");
+	}
 	return num.reduce((acc, v) => acc + v, 0) / num.length;
+}
+// calculates rho, which controls the strength of the correlation that is used for the 	probability matrix
+// it is used for low scoring games such as 1-0, 0-1, 1-1, 0-0	
+function probabilityShift(x: number, y: number, xGHome: number, xGaway: number, rho: number): number {
+	return 1;
 }
