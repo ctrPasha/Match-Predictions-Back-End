@@ -4,5 +4,5 @@ import * as PredictGoals from '../prediction/goals';
 export async function fetchAndCalculatePredictions(competitonCode: string, homeTeamPublicId: string, awayTeamPublicId: string) {
 	let matches = await MatchDataController.getMatchByLeague(competitonCode);
 
-	return PredictGoals.predictGoals(matches, homeTeamPublicId, awayTeamPublicId);	
+	return PredictGoals.predictExpectedGoals(matches, homeTeamPublicId, awayTeamPublicId);	
 }

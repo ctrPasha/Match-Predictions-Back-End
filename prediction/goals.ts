@@ -1,15 +1,14 @@
+import { MAX } from 'uuid';
 import { MatchPrediction, PredictionResult,  } from '../interfaces/predictions/goals';
 
-/*
-	TODO:
-		Figure out a way to on how to implement a teams current form into the predictions
-		so for example historical data can have a certain weight on the final outcome of the prediction
-		while the recent data has a different weight, and adjust to get the most accurate rating
-		somethign similar to what 537 score predictions did. 
-*/
+
+// RHO constant, from doing research, most numbers tend to be between -0.10 and -0.13
+// Though as I get more data, I will calculate rho my self accoridng to the Cole Dixon module
+const RHO = -0.13;
+const MAX_GOALS = 10;
 
 // the module used to predict the final scores of the two teams 
-export function predictGoals(matches: MatchPrediction[], homePublicId: string, awayPublicId: string): PredictionResult {
+export function predictExpectedGoals(matches: MatchPrediction[], homePublicId: string, awayPublicId: string): PredictionResult {
 	// Grab all games for that specific home team
 	let teamHomeGames = matches.filter((match) => {
 		return match.homeTeamPublicId === homePublicId;
@@ -73,8 +72,72 @@ function avg(num: number[]): number {
 	}
 	return num.reduce((acc, v) => acc + v, 0) / num.length;
 }
-// calculates rho, which controls the strength of the correlation that is used for the 	probability matrix
+// calculates tao, which controls the strength of the correlation that is used for the 	probability matrix
 // it is used for low scoring games such as 1-0, 0-1, 1-1, 0-0	
+// https://www.ajbuckeconbikesail.net/wkpapers/Airports/MVPoisson/soccer_betting.pdf module 4.2
 function probabilityShift(x: number, y: number, xGHome: number, xGaway: number, rho: number): number {
+	if (x === 0 && y == 0) {
+		return (1 - (xGHome * xGaway * rho));
+ 	} else if (x === 0 && y === 1) {
+		return (1 + (xGHome * rho));
+	} else if (x === 1 && y === 0) {
+		return (1 + (xGaway * rho));
+	} else if (x === 1 && y === 1) {
+		return 1 - rho;
+	}
 	return 1;
 }
+
+// https://dashee87.github.io/football/python/predicting-football-results-with-statistical-modelling-dixon-coles-and-time-weighting/
+// builds the probability matrix 
+function createProbabilityMatrix(xGHome: number, XGAway: number, rho: number): number[][] {
+	const probabilityMatrix: number[][] = [];
+	const x: number[] = [];
+	const y: number[] = [];
+
+	// fill in the arrays with probabilities to then build the matrix 
+	for (let i = 0; i <= MAX_GOALS; i++) {
+		x[i] = poissonDistribution(xGHome, i);
+		y[i] = poissonDistribution(XGAway, i);
+	}
+
+	// building the matrix
+	for (let i = 0; i <= MAX_GOALS; i++) {
+		for (let j = 0; j <= MAX_GOALS; j++) {
+			probabilityMatrix[i][j] = x[i] * y[j] * probabilityShift(i, j, xGHome, XGAway, RHO);
+		}
+	}
+	return probabilityMatrix;
+}
+
+// Poisson probability mass function 
+// http://geeksforgeeks.org/maths/poisson-distribution/
+function poissonDistribution(xG: number, x: number): number {
+	return (Math.pow(xG, x)  * Math.exp(-xG)) / factorial(x);
+}
+
+function factorial(num: number): number {
+	if (num <= 1) {
+		return 1;
+	}
+
+	let res = 1;
+
+	for (let i = 1; i <= num; i++) {
+		res *= i 
+	}
+
+	return res;
+}
+
+/*
+	TODO:
+		Figure out a way to on how to implement a teams current form into the predictions
+		so for example historical data can have a certain weight on the final outcome of the prediction
+		while the recent data has a different weight, and adjust to get the most accurate rating
+		somethign similar to what 537 score predictions did. 
+
+	TODO2: 
+		Build the function that grabs the probability matrix, and calculates the most probable
+		call this in the main function and you get the most accurate prediction
+*/
