@@ -10,11 +10,11 @@ export interface PredictionResult {
 	awayPublicId: string;
 
 	// expected goals(xG) (H)ome/(A)way
-	xGHome: number
-	xGAway: number
+	probability: MostProbableScoreLine;
 }
 
 export interface MostProbableScoreLine {
 	likelyScoreHome: number;
 	likelyScoreAway: number;
+	probability: number;
 }

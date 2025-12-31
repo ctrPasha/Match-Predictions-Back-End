@@ -50,11 +50,14 @@ export function predictExpectedGoals(matches: MatchPrediction[], homePublicId: s
 	let xGHome = homeAttack * awayDefense * leagueAvgGoalsHome;
 	let xGAway = awayAttack * homeDefense * leagueAvgGoalsAway;
 
+	let probabilityMatrix = createProbabilityMatrix(xGHome, xGAway);
+
+	let highestProbabilityScoreline = predictMostProbableScore(probabilityMatrix);
+
 	return {
 		homePublicId,
 		awayPublicId,
-		xGHome,
-		xGAway
+		probability: highestProbabilityScoreline
 	}
 }
 
@@ -124,7 +127,7 @@ function createProbabilityMatrix(xGHome: number, XGAway: number): number[][] {
 function predictMostProbableScore(probabilityMatrix: number[][]): MostProbableScoreLine {
 	let likelyScoreHome: number = 0;
 	let likelyScoreAway: number = 0;
-	let highestProbability: number = 0;
+	let probability: number = 0;
 
 	if (probabilityMatrix.length === 0) {
 		throw new Error("Probability matrix is empty!");
@@ -132,17 +135,20 @@ function predictMostProbableScore(probabilityMatrix: number[][]): MostProbableSc
 
 	for (let i = 0; i <= MAX_GOALS; i++) {
 		for (let j = 0; j <= MAX_GOALS; j++) {
-			if (probabilityMatrix[i][j] > highestProbability) {
-				highestProbability = probabilityMatrix[i][j];
+			if (probabilityMatrix[i][j] > probability) {
+				probability = probabilityMatrix[i][j];
 				likelyScoreHome = i;
 				likelyScoreAway = j;
 			}
 		}
 	}
-	
+
+	// Rounds the highest probable score to a percentage which will then be displayed in the front-end
+	probability = Math.round(probability * 100);
 	return {
 		likelyScoreHome,
-		likelyScoreAway
+		likelyScoreAway,
+		probability
 	}
 }
 
