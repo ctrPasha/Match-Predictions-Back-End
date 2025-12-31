@@ -1,6 +1,15 @@
-import { MAX } from 'uuid';
-import { MatchPrediction, PredictionResult,  } from '../interfaces/predictions/goals';
+import { MatchPrediction, PredictionResult, MostProbableScoreLine} from '../interfaces/predictions/goals';
 
+/*************************************************
+	NOTE:
+		im substituting some of the values like lambda and mu with my own name conventions
+		lambda = xGHome
+		mu = xGAway
+
+		so to build the probability matrix we use the equation 
+		P(x, y) = tao_lamba, mu(x,y) * possion(xGHome, i) * poisson(xGAway, j)
+
+**************************************************/
 
 // RHO constant, from doing research, most numbers tend to be between -0.10 and -0.13
 // Though as I get more data, I will calculate rho my self accoridng to the Cole Dixon module
@@ -90,7 +99,7 @@ function probabilityShift(x: number, y: number, xGHome: number, xGaway: number, 
 
 // https://dashee87.github.io/football/python/predicting-football-results-with-statistical-modelling-dixon-coles-and-time-weighting/
 // builds the probability matrix 
-function createProbabilityMatrix(xGHome: number, XGAway: number, rho: number): number[][] {
+function createProbabilityMatrix(xGHome: number, XGAway: number): number[][] {
 	const probabilityMatrix: number[][] = [];
 	const x: number[] = [];
 	const y: number[] = [];
@@ -103,6 +112,7 @@ function createProbabilityMatrix(xGHome: number, XGAway: number, rho: number): n
 
 	// building the matrix
 	for (let i = 0; i <= MAX_GOALS; i++) {
+		probabilityMatrix[i] = [];
 		for (let j = 0; j <= MAX_GOALS; j++) {
 			probabilityMatrix[i][j] = x[i] * y[j] * probabilityShift(i, j, xGHome, XGAway, RHO);
 		}
@@ -110,7 +120,33 @@ function createProbabilityMatrix(xGHome: number, XGAway: number, rho: number): n
 	return probabilityMatrix;
 }
 
-// Poisson probability mass function 
+// Predicts the most probable score with the highest probability using the probability matrix. 
+function predictMostProbableScore(probabilityMatrix: number[][]): MostProbableScoreLine {
+	let likelyScoreHome: number = 0;
+	let likelyScoreAway: number = 0;
+	let highestProbability: number = 0;
+
+	if (probabilityMatrix.length === 0) {
+		throw new Error("Probability matrix is empty!");
+	}
+
+	for (let i = 0; i <= MAX_GOALS; i++) {
+		for (let j = 0; j <= MAX_GOALS; j++) {
+			if (probabilityMatrix[i][j] > highestProbability) {
+				highestProbability = probabilityMatrix[i][j];
+				likelyScoreHome = i;
+				likelyScoreAway = j;
+			}
+		}
+	}
+	
+	return {
+		likelyScoreHome,
+		likelyScoreAway
+	}
+}
+
+// Poisson mass probability function 
 // http://geeksforgeeks.org/maths/poisson-distribution/
 function poissonDistribution(xG: number, x: number): number {
 	return (Math.pow(xG, x)  * Math.exp(-xG)) / factorial(x);
@@ -138,6 +174,6 @@ function factorial(num: number): number {
 		somethign similar to what 537 score predictions did. 
 
 	TODO2: 
-		Build the function that grabs the probability matrix, and calculates the most probable
+		Build the function that grabs the probability matrix, and calculates the most probable scoreline, and returns that scoreline
 		call this in the main function and you get the most accurate prediction
 */
