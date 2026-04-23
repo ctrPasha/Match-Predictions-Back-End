@@ -153,6 +153,8 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
     await TeamDataController.bulkCreate(teamsToCreate);
 }
 
+
+
 function validateCompetitionCode(competitionCode: string): void {
     if (!COMPETITION_CODES.includes(competitionCode)) {
         throw new Error(`Invalid competition code provided: ${competitionCode}`);

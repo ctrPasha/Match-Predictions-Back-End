@@ -41,7 +41,7 @@ export async function create(
 }
 
 export async function bulkCreate(matches: any[]): Promise<SequelizeMatchModel[]> {
-    return await SequelizeMatchModel.bulkCreate(matches);
+    return await SequelizeMatchModel.bulkCreate(matches, { ignoreDuplicates: true });
 }
 
 export async function getUniqueMatch(

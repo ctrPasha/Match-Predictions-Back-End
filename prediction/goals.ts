@@ -1,6 +1,6 @@
 import { MatchPrediction, PredictionResult, MostProbableScoreLine} from '../interfaces/predictions/goals';
 
-/*************************************************
+/********************************************************************************************
 	NOTE:
 		im substituting some of the values like lambda and mu with my own name conventions
 		lambda = xGHome
@@ -9,7 +9,7 @@ import { MatchPrediction, PredictionResult, MostProbableScoreLine} from '../inte
 		so to build the probability matrix we use the equation 
 		P(x, y) = tao_lamba, mu(x,y) * possion(xGHome, i) * poisson(xGAway, j)
 
-**************************************************/
+*********************************************************************************************/
 
 // RHO constant, from doing research, most numbers tend to be between -0.10 and -0.13
 // Though as I get more data, I will calculate rho my self accoridng to the Cole Dixon module
@@ -66,7 +66,7 @@ export function predictExpectedGoals(matches: MatchPrediction[], homePublicId: s
 	away attack strength = the aways team avg goals scored away / league avg away
 	home defense = home teams goals conceded/ league average at home conceded
 	away defense = the teams away goals conceded / league average away conceded 
-**********************************************************************************/ 
+***********************************************************************************/ 
 function getPredictedGoals(matchPredictions: MatchPrediction[], leagueAvgGoals: number, homeMatch: boolean): number {
 	const games = matchPredictions.map(match => {
 		return homeMatch ? match.fullTimeHome : match.fullTimeAway;
@@ -84,6 +84,7 @@ function avg(num: number[]): number {
 	}
 	return num.reduce((acc, v) => acc + v, 0) / num.length;
 }
+
 // calculates tao, which controls the strength of the correlation that is used for the 	probability matrix
 // it is used for low scoring games such as 1-0, 0-1, 1-1, 0-0	
 // https://www.ajbuckeconbikesail.net/wkpapers/Airports/MVPoisson/soccer_betting.pdf module 4.2
@@ -120,6 +121,7 @@ function createProbabilityMatrix(xGHome: number, XGAway: number): number[][] {
 			probabilityMatrix[i][j] = x[i] * y[j] * probabilityShift(i, j, xGHome, XGAway, RHO);
 		}
 	}
+	console.log(probabilityMatrix);
 	return probabilityMatrix;
 }
 
