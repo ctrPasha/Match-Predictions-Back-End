@@ -92,7 +92,7 @@ Where:
 
 In the current implementation, $\rho$ is set to `-0.13`(Seems to be the most consistent value from my research). In a future version, this value will be estimated from historical match data. 
 
-## Most Probable Scoreline
+## Scoreline Probability & Final Prediction
 
 The probability of a scoreline is calculated as:
 
