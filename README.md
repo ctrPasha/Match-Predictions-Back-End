@@ -46,7 +46,7 @@ Where:
 
 This formula is used to calculate the likelihood of different goal counts, which are then combined into a scoreline probability matrix.
 
-## Prediction Math 4(Probability Matrix Cole-Dixon)
+## Prediction Math 4(Probability Matrix Dixon-Coles)
 
 The probability of a specific scoreline (home goals = $i$, away goals = $j$) is calculated by combining two Poisson distributions:
 
@@ -65,6 +65,34 @@ Each probability is calculated using the Poisson formula with its own expected g
 - $\lambda_{\text{away}}$ for the away team  
 
 This produces a matrix of probabilities for all score combinations (e.g., 0–0 up to 10–10).
+
+## Prediction Math 5(Low Scoring Adjustment)
+
+### Dixon-Coles Low-Score Adjustment
+
+The model applies a Dixon-Coles style adjustment, represented by $\tau(i,j;\rho)$, to account for correlation in low-scoring soccer matches.
+
+$$
+\tau(i,j;\rho) =
+\begin{cases}
+1 - \lambda_{\text{home}}\lambda_{\text{away}}\rho, & i = 0,\ j = 0 \\
+1 + \lambda_{\text{home}}\rho, & i = 0,\ j = 1 \\
+1 + \lambda_{\text{away}}\rho, & i = 1,\ j = 0 \\
+1 - \rho, & i = 1,\ j = 1 \\
+1, & \text{otherwise}
+\end{cases}
+$$
+
+Where:
+
+- $\tau(i,j;\rho)$ = adjustment applied to the scoreline probability
+- $i$ = number of goals scored by the home team
+- $j$ = number of goals scored by the away team
+- $\lambda_{\text{home}}$ = expected goals for the home team
+- $\lambda_{\text{away}}$ = expected goals for the away team
+- $\rho$ = correlation parameter controlling how strongly low-scoring outcomes are adjusted
+
+In the current implementation, $\rho$ is set to `-0.13`. In a future version, this value will be estimated from historical match data instead of being hardcoded.
 
 ## Most Probable Scoreline
 
