@@ -68,8 +68,6 @@ This produces a matrix of probabilities for all score combinations (e.g., 0–0 
 
 ## Prediction Math 5(Low Scoring Adjustment)
 
-### Dixon-Coles Low-Score Adjustment
-
 The model applies a Dixon-Coles style adjustment, represented by $\tau(i,j;\rho)$, to account for correlation in low-scoring soccer matches.
 
 $$
@@ -92,7 +90,7 @@ Where:
 - $\lambda_{\text{away}}$ = expected goals for the away team
 - $\rho$ = correlation parameter controlling how strongly low-scoring outcomes are adjusted
 
-In the current implementation, $\rho$ is set to `-0.13`. In a future version, this value will be estimated from historical match data instead of being hardcoded.
+In the current implementation, $\rho$ is set to `-0.13`(Seems to be the most consistent value from my research). In a future version, this value will be estimated from historical match data. 
 
 ## Most Probable Scoreline
 
@@ -122,8 +120,3 @@ Where:
 - $\arg\max$ = selects the scoreline with the highest probability
 
 The model evaluates possible scorelines ranging from 0–0 up to 10–10 and returns the most likely result with its probability.
-
-## Extra Information
-- $\rho$ = correlation parameter controlling the strength of the adjustment(from what I researched -0.13 seems to be the most consistant one, but I will calculate this in the future my self)
-
-
