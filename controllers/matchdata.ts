@@ -52,10 +52,10 @@ export async function getUniqueMatch(
 ): Promise<SequelizeMatchModel | null> {
     return await SequelizeMatchModel.findOne({
         where: {
-            homeTeamName,
-            awayTeamName,
-            seasonYear,
-            match_id
+            [Op.or]: [
+                { match_id },
+                { homeTeamName, awayTeamName, seasonYear }
+            ]
         }
     });
 }

@@ -1,20 +1,21 @@
 export interface MatchPrediction {
-	homeTeamPublicId: string;
-	awayTeamPublicId: string;
-	fullTimeHome: number;
-	fullTimeAway: number;
+    homeTeamPublicId: string;
+    awayTeamPublicId: string;
+    fullTimeHome: number;
+    fullTimeAway: number;
+    matchDate: string;
 }
-// Note to self Prediction Result should change later on 
+// Note to self Prediction Result should change later on
 export interface PredictionResult {
-	homePublicId: string;
-	awayPublicId: string;
+    homePublicId: string;
+    awayPublicId: string;
 
-	// expected goals(xG) (H)ome/(A)way
-	probability: MostProbableScoreLine;
+    // expected goals(xG) (H)ome/(A)way
+    probability: MostProbableScoreLine;
 }
 
 export interface MostProbableScoreLine {
-	likelyScoreHome: number;
-	likelyScoreAway: number;
-	probability: number;
+    likelyScoreHome: number;
+    likelyScoreAway: number;
+    probability: number;
 }

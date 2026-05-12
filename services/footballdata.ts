@@ -48,15 +48,15 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 existingMatch.fullTimeHome !== transformedMatch.score.fullTime.home ||
                 existingMatch.fullTimeAway !== transformedMatch.score.fullTime.away 
             ) {
-                existingMatch.fullTimeHome = transformedMatch.score.fullTime.home ?? 0;
-                existingMatch.fullTimeAway = transformedMatch.score.fullTime.away ?? 0;
+                existingMatch.fullTimeHome = transformedMatch.score.fullTime.home ?? null;
+                existingMatch.fullTimeAway = transformedMatch.score.fullTime.away ?? null;
             }
 
             if (existingMatch.halfTimeHome !== transformedMatch.score.halfTime.home || 
                 existingMatch.halfTimeAway !== transformedMatch.score.halfTime.away
             ) {
-                existingMatch.halfTimeHome = transformedMatch.score.halfTime.home ?? 0;
-                existingMatch.halfTimeAway = transformedMatch.score.halfTime.away ?? 0;
+                existingMatch.halfTimeHome = transformedMatch.score.halfTime.home ?? null;
+                existingMatch.halfTimeAway = transformedMatch.score.halfTime.away ?? null;
             }
 
             if (existingMatch.scoreWinner != transformedMatch.score.winner) {
@@ -80,10 +80,10 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
                 awayTeamName: transformedMatch.awayTeam.shortName,
                 scoreWinner: transformedMatch.score.winner ?? null,
                 duration: transformedMatch.score.duration ?? null,
-                fullTimeHome: transformedMatch.score.fullTime.home,
-                fullTimeAway: transformedMatch.score.fullTime.away,
-                halfTimeHome: transformedMatch.score.halfTime.home,
-                halfTimeAway: transformedMatch.score.halfTime.away,
+                fullTimeHome: transformedMatch.score.fullTime.home ?? null,
+                fullTimeAway: transformedMatch.score.fullTime.away ?? null,
+                halfTimeHome: transformedMatch.score.halfTime.home ?? null,
+                halfTimeAway: transformedMatch.score.halfTime.away ?? null,
                 regularTimeHome: transformedMatch.score.regularTime.home ?? null,
                 regularTimeAway: transformedMatch.score.regularTime.away ?? null,
                 extraTimeHome: transformedMatch.score.extraTime.home ?? null,

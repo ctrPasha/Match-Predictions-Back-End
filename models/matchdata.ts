@@ -16,11 +16,11 @@ export class SequelizeMatchModel extends Model {
     public scoreWinner!: string;
     public duration!: string;
 
-    public fullTimeHome!: number;
-    public fullTimeAway!: number;
+    public fullTimeHome!: number | null;
+    public fullTimeAway!: number | null;
 
-    public halfTimeHome!: number;
-    public halfTimeAway!: number;
+    public halfTimeHome!: number | null;
+    public halfTimeAway!: number | null;
 
     public regularTimeHome!: number;
     public regularTimeAway!: number;
