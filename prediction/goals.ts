@@ -50,6 +50,7 @@ export function predictExpectedGoals(
         matches.map(match => match.fullTimeHome),
         leagueWeight
     );
+	
     let leagueAvgGoalsAway = weightedAvg(
         matches.map(match => match.fullTimeAway),
         leagueWeight
