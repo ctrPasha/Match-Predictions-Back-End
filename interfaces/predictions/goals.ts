@@ -1,3 +1,5 @@
+import { MatchWinner } from "./winner";
+
 export interface MatchPrediction {
     homeTeamPublicId: string;
     awayTeamPublicId: string;
@@ -12,6 +14,7 @@ export interface PredictionResult {
 
     // expected goals(xG) (H)ome/(A)way
     probability: MostProbableScoreLine;
+    winner: MatchWinner;
 }
 
 export interface MostProbableScoreLine {

@@ -1,5 +1,6 @@
 import { time } from 'console';
 import { MatchPrediction, PredictionResult, MostProbableScoreLine } from '../interfaces/predictions/goals';
+import { MatchWinner } from '../interfaces/predictions/winner';
 
 /********************************************************************************************
 	NOTE:
@@ -45,16 +46,9 @@ export function predictExpectedGoals(
         throw new Error('Array is empty, cannot gather data');
     }
 
-    const leagueWeight = matches.map(match => timeDecay(XI, calculateDaysSinceMatch(match.matchDate)));
-    let leagueAvgGoalsHome = weightedAvg(
-        matches.map(match => match.fullTimeHome),
-        leagueWeight
-    );
-	
-    let leagueAvgGoalsAway = weightedAvg(
-        matches.map(match => match.fullTimeAway),
-        leagueWeight
-    );
+    let leagueAvgGoalsHome = avg(matches.map(match => match.fullTimeHome));
+
+    let leagueAvgGoalsAway = avg(matches.map(match => match.fullTimeAway));
 
     // Calculating attack strengths for each team
     let homeAttack = getPredictedGoals(teamHomeGames, leagueAvgGoalsHome, true);
@@ -64,23 +58,28 @@ export function predictExpectedGoals(
     let homeDefense = getPredictedGoals(teamHomeGames, leagueAvgGoalsAway, false);
     let awayDefense = getPredictedGoals(teamAwayGames, leagueAvgGoalsHome, true);
 
+    // Clamp home advantage to be at least 1, since it is a multiplier, and if it is less than 1, it would reduce the home teams xG which would not make sense since home advantage is a real thing in football
+	let homeAdvantage = Math.max(1.0, leagueAvgGoalsHome / leagueAvgGoalsAway);
+
+    console.log("Home Advantage: ", homeAdvantage);
+
     // according to the poisson module: https://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/
     // xGHome = Attack strength of home team * defense strength of away team * league average goals scored home
     // xGAway = Attack strength of away team * defense strength of home team * league average goals scored away
-    let xGHome = homeAttack * awayDefense * leagueAvgGoalsHome;
+    let xGHome = homeAttack * awayDefense * leagueAvgGoalsHome * homeAdvantage;
     let xGAway = awayAttack * homeDefense * leagueAvgGoalsAway;
-
-    console.log({ homeAttack, awayAttack, homeDefense, awayDefense });
-    console.log({ xGHome, xGAway });
 
     let probabilityMatrix = createProbabilityMatrix(xGHome, xGAway);
 
     let highestProbabilityScoreline = predictMostProbableScore(probabilityMatrix);
 
+    let matchWinner = predictMatchWinner(probabilityMatrix);
+
     return {
         homePublicId,
         awayPublicId,
-        probability: highestProbabilityScoreline
+        probability: highestProbabilityScoreline,
+        winner: matchWinner
     };
 }
 
@@ -232,14 +231,51 @@ function calculateDaysSinceMatch(matchDate: string): number {
     return daysDiff;
 }
 
-/*
-	TODO:
-		Figure out a way to on how to implement a teams current form into the predictions
-		so for example historical data can have a certain weight on the final outcome of the prediction
-		while the recent data has a different weight, and adjust to get the most accurate rating
-		somethign similar to what 537 score predictions did. 
+function predictMatchWinner(probabilityMatrix: number[][]): MatchWinner {
+    
+    // The percentage for the home team winning, the away team winning, and a draw
+    let homeWinner = 0;
+    let awayWinner = 0;
+    let draw = 0;
 
-	TODO2: 
-		Build the function that grabs the probability matrix, and calculates the most probable scoreline, and returns that scoreline
-		call this in the main function and you get the most accurate prediction
-*/
+    // The sum of all the probabilities in the matrix, used to calculate the percentage of each outcome
+    let sum = 0;
+
+    // Loop through the probability matrix and calculate the sum of all probabilities, as well as the probabilities for each outcome
+    for (let i = 0; i <= MAX_GOALS; i++) {
+        for (let j = 0; j <= MAX_GOALS; j++) {
+            sum += probabilityMatrix[i][j];
+            if (i > j) {
+                homeWinner += probabilityMatrix[i][j];
+            } else if (i < j) {
+                awayWinner += probabilityMatrix[i][j];
+            } else {
+                draw += probabilityMatrix[i][j];
+            }
+        }
+    }
+
+    // Calculate the percentage for each outcome
+    homeWinner = Math.round((homeWinner / sum) * 100);
+    awayWinner = Math.round((awayWinner / sum) * 100);
+    draw = Math.round((draw / sum) * 100);
+
+    // Determine the most probable winner based on the highest percentage
+    let mostProbableWinner = '';
+    if (homeWinner > awayWinner && homeWinner > draw) {
+        mostProbableWinner = "HOME";
+    } else if (awayWinner > homeWinner && awayWinner > draw) {
+        mostProbableWinner = "AWAY";
+    } else {
+        mostProbableWinner = "DRAW";
+    }
+
+    return {
+        homeWinner,
+        draw,
+        awayWinner,
+        mostProbableWinner
+    };
+
+    
+}

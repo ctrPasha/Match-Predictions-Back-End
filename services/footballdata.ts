@@ -6,10 +6,35 @@ import * as TeamDataController from '../controllers/teamdata';
 import * as MatchDataController from '../controllers/matchdata';
 
 import { v4 as uuidv4 } from 'uuid';
+import { Match } from '../interfaces/footballdata/match';
+import { SequelizeMatchModel } from '../models/matchdata';
 
 export const BASE_URL = 'http://api.football-data.org/v4/';
 
 const COMPETITION_CODES = ['PL', 'PD', 'BL1', 'FL1', 'DED', 'SA', 'PPL', 'CL'];
+
+export async function updateExistingMatch(
+    existingMatch: SequelizeMatchModel,
+    transformedMatch: Match
+): Promise<void> {
+    await existingMatch.update({
+        status: transformedMatch.status,
+        scoreWinner: transformedMatch.score.winner ?? null,
+        duration: transformedMatch.score.duration ?? null,
+        fullTimeHome: transformedMatch.score.fullTime.home ?? null,
+        fullTimeAway: transformedMatch.score.fullTime.away ?? null,
+        halfTimeHome: transformedMatch.score.halfTime.home ?? null,
+        halfTimeAway: transformedMatch.score.halfTime.away ?? null,
+        regularTimeHome: transformedMatch.score.regularTime.home ?? null,
+        regularTimeAway: transformedMatch.score.regularTime.away ?? null,
+        extraTimeHome: transformedMatch.score.extraTime.home ?? null,
+        extraTimeAway: transformedMatch.score.extraTime.away ?? null,
+        penaltiesHome: transformedMatch.score.penalties.home ?? null,
+        penaltiesAway: transformedMatch.score.penalties.away ?? null,
+        homeTeamName: transformedMatch.homeTeam.shortName,
+        awayTeamName: transformedMatch.awayTeam.shortName,
+    });
+}
 
 export async function fetchAndSaveMatches(competitionCode: string, season: string): Promise<void> {
     let endpoint = `${BASE_URL}competitions/${competitionCode}/matches`;
@@ -40,30 +65,7 @@ export async function fetchAndSaveMatches(competitionCode: string, season: strin
 
         // if the match exists look for changes in status, and score.halfTime.away/home and update it accordingly.
         if (existingMatch) {
-            if (existingMatch.status !== transformedMatch.status) {
-                existingMatch.status = transformedMatch.status;
-            }
-
-            if (
-                existingMatch.fullTimeHome !== transformedMatch.score.fullTime.home ||
-                existingMatch.fullTimeAway !== transformedMatch.score.fullTime.away 
-            ) {
-                existingMatch.fullTimeHome = transformedMatch.score.fullTime.home ?? null;
-                existingMatch.fullTimeAway = transformedMatch.score.fullTime.away ?? null;
-            }
-
-            if (existingMatch.halfTimeHome !== transformedMatch.score.halfTime.home || 
-                existingMatch.halfTimeAway !== transformedMatch.score.halfTime.away
-            ) {
-                existingMatch.halfTimeHome = transformedMatch.score.halfTime.home ?? null;
-                existingMatch.halfTimeAway = transformedMatch.score.halfTime.away ?? null;
-            }
-
-            if (existingMatch.scoreWinner != transformedMatch.score.winner) {
-                existingMatch.scoreWinner = transformedMatch.score.winner ?? '';
-            }
-
-            await existingMatch.save();
+            await updateExistingMatch(existingMatch, transformedMatch);
         }
 
         const homeTeam = await TeamDataController.getTeamByName(transformedMatch.homeTeam.shortName);
@@ -152,8 +154,6 @@ export async function fetchAndSaveTeams(competitionCode: string, season: string)
     console.log('Teams to insert:', teamsToCreate);
     await TeamDataController.bulkCreate(teamsToCreate);
 }
-
-
 
 function validateCompetitionCode(competitionCode: string): void {
     if (!COMPETITION_CODES.includes(competitionCode)) {
