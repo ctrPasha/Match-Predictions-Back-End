@@ -59,9 +59,9 @@ export function predictExpectedGoals(
     let awayDefense = getPredictedGoals(teamAwayGames, leagueAvgGoalsHome, true);
 
     // Clamp home advantage to be at least 1, since it is a multiplier, and if it is less than 1, it would reduce the home teams xG which would not make sense since home advantage is a real thing in football
-	let homeAdvantage = Math.max(1.0, leagueAvgGoalsHome / leagueAvgGoalsAway);
+    let homeAdvantage = Math.max(1.0, leagueAvgGoalsHome / leagueAvgGoalsAway);
 
-    console.log("Home Advantage: ", homeAdvantage);
+    console.log('Home Advantage: ', homeAdvantage);
 
     // according to the poisson module: https://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/
     // xGHome = Attack strength of home team * defense strength of away team * league average goals scored home
@@ -176,10 +176,6 @@ function predictMostProbableScore(probabilityMatrix: number[][]): MostProbableSc
     };
 }
 
-function predictWinner(probabilityMatrix: number[][]): number {
-    return 0;
-}
-
 // Poisson mass probability function
 // http://geeksforgeeks.org/maths/poisson-distribution/
 function poissonDistribution(xG: number, x: number): number {
@@ -232,7 +228,6 @@ function calculateDaysSinceMatch(matchDate: string): number {
 }
 
 function predictMatchWinner(probabilityMatrix: number[][]): MatchWinner {
-    
     // The percentage for the home team winning, the away team winning, and a draw
     let homeWinner = 0;
     let awayWinner = 0;
@@ -263,11 +258,11 @@ function predictMatchWinner(probabilityMatrix: number[][]): MatchWinner {
     // Determine the most probable winner based on the highest percentage
     let mostProbableWinner = '';
     if (homeWinner > awayWinner && homeWinner > draw) {
-        mostProbableWinner = "HOME";
+        mostProbableWinner = 'HOME';
     } else if (awayWinner > homeWinner && awayWinner > draw) {
-        mostProbableWinner = "AWAY";
+        mostProbableWinner = 'AWAY';
     } else {
-        mostProbableWinner = "DRAW";
+        mostProbableWinner = 'DRAW';
     }
 
     return {
@@ -276,6 +271,4 @@ function predictMatchWinner(probabilityMatrix: number[][]): MatchWinner {
         awayWinner,
         mostProbableWinner
     };
-
-    
 }

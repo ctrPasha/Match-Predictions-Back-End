@@ -31,10 +31,23 @@ export class SequelizeMatchModel extends Model {
     public penaltiesHome!: number;
     public penaltiesAway!: number;
 
-	public match_id!: number;
+    public match_id!: number;
     public status!: string;
     public homeTeamPublicId!: string;
-    public awayTeamPublicId!:string;
+    public awayTeamPublicId!: string;
+
+    public homeShots!: number | null;
+    public awayShots!: number | null;
+    public homeShotsOnTarget!: number | null;
+    public awayShotsOnTarget!: number | null;
+    public homeCorners!: number | null;
+    public awayCorners!: number | null;
+    public homeFouls!: number | null;
+    public awayFouls!: number | null;
+    public homeYellowCards!: number | null;
+    public awayYellowCards!: number | null;
+    public homeRedCards!: number | null;
+    public awayRedCards!: number | null;
 }
 
 export function init(sequelize: Sequelize): void {
@@ -62,15 +75,15 @@ export function init(sequelize: Sequelize): void {
 
             seasonYear: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: false
             },
 
             homeTeamName: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING
             },
 
             awayTeamName: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING
             },
 
             scoreWinner: {
@@ -133,19 +146,19 @@ export function init(sequelize: Sequelize): void {
                 allowNull: true
             },
 
-			match_id: {
-				type: DataTypes.INTEGER,
-				unique: true
-			},
+            match_id: {
+                type: DataTypes.INTEGER,
+                unique: true
+            },
 
             status: {
                 type: DataTypes.STRING,
                 allowNull: true
             },
 
-			matchDate: {
-				type: DataTypes.STRING
-			},
+            matchDate: {
+                type: DataTypes.STRING
+            },
 
             homeTeamPublicId: {
                 type: DataTypes.STRING,
@@ -153,13 +166,71 @@ export function init(sequelize: Sequelize): void {
                 allowNull: false
             },
 
-             awayTeamPublicId: {
+            awayTeamPublicId: {
                 type: DataTypes.STRING,
                 unique: false,
                 allowNull: false
             },
 
+            homeShots: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
 
+            awayShots: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            homeShotsOnTarget: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            awayShotsOnTarget: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            homeCorners: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            awayCorners: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            homeFouls: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            awayFouls: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            homeYellowCards: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            awayYellowCards: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            homeRedCards: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+
+            awayRedCards: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
         },
         {
             sequelize,

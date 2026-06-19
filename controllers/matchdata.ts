@@ -125,3 +125,13 @@ export async function getMatchByLeague(competitionCode: string): Promise<Sequeli
         }
     });
 }
+
+export async function findBySeasonAndTeams(
+    seasonYear: string,
+    homeTeamName: string,
+    awayTeamName: string
+): Promise<SequelizeMatchModel | null> {
+    return await SequelizeMatchModel.findOne({
+        where: { seasonYear, homeTeamName, awayTeamName }
+    });
+}
